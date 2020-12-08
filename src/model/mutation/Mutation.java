@@ -1,9 +1,10 @@
 package model.mutation;
 
-import model.Individual;
+import model.comunity.Individual;
 
 public interface Mutation {
-	
-	public Individual mutation(Individual individual);
-	
+
+	public Individual oneGeneMutation(Individual individual);
+
+	public Individual twoGeneMutation(Individual individual);
 }

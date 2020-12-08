@@ -1,4 +1,4 @@
-package model;
+package model.comunity;
 
 import java.util.Arrays;
 

@@ -2,8 +2,8 @@ package model.selection;
 
 import java.util.Arrays;
 
-import model.Individual;
-import model.Population;
+import model.comunity.Individual;
+import model.comunity.Population;
 
 public class RankSelection implements Selection {
 

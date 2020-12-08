@@ -2,6 +2,8 @@ package model;
 
 import java.util.Arrays;
 
+import model.comunity.Individual;
+import model.comunity.Population;
 import model.crossover.Crossover;
 import model.crossover.TwoPointCrossover;
 import model.mutation.FlipBitMutation;
@@ -65,7 +67,7 @@ public class Gameboard {
 		// Đột biến nữa sau các cá thể vừa lại tạo (các cá thể không tốt)
 		Individual offspring;
 		for (int i = sizeOfPop - 1; i >= sizeOfPop / 2; i--) {
-			offspring = mutation.mutation(individuals[i]);
+			offspring = mutation.twoGeneMutation(individuals[i]);
 			popMu[sizeOfPop - i - 1] = offspring;
 			// System.out.println("Big index:" + i);
 			// System.out.println("Small index:" + (sizeOfPop - i - 1));
@@ -127,9 +129,8 @@ public class Gameboard {
 		long et = System.currentTimeMillis();
 		System.out.println("Time sovle: " + (et - st) / 1000 + "s");
 		/*
-		 * Code bug nếu quần thể ban đầu là lẻ
-		 * Lâu lâu nó bị ngu 1 lần nên giải không ra.
-		 * Chương trình chạy quá lâu.
+		 * Code bug nếu quần thể ban đầu là lẻ Lâu lâu nó bị ngu 1 lần nên giải không
+		 * ra. Chương trình chạy quá lâu.
 		 */
 	}
 }

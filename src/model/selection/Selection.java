@@ -1,6 +1,6 @@
 package model.selection;
 
-import model.Individual;
+import model.comunity.Individual;
 
 public interface Selection {
 

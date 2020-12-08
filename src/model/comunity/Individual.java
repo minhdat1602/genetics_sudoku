@@ -1,4 +1,4 @@
-package model;
+package model.comunity;
 
 public class Individual implements Comparable<Individual> {
 	private Gene[] genes;
