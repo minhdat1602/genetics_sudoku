@@ -27,7 +27,7 @@ public class Gameboard {
 	public void restart() {
 		found = false;
 
-		oldGeneration = new Population(50);
+		oldGeneration = new Population(2000);
 		oldGeneration.initPopulation();
 
 		newGeneration = new Population();
@@ -80,19 +80,25 @@ public class Gameboard {
 		Arrays.sort(popCross);
 		// Lấy 1 nữa cá thể xấu nhất vừa lại tạo đi đột biến.
 		Individual[] popMu = mutation(popCross);
-
+		
+		// Chọn số lượng cá thể tốt vừa đột biến và lai tạo thành thế hệ mới
 		Individual[] newIndividuals = selection.rankSelection(oldGeneration.getIndividuals().length, popCross, popMu);
-
 		newGeneration.setIndividuals(newIndividuals);
 	}
 
 	public void genetic() {
 		while (!found) {
+			// Khởi tạo thế hệ mới.
 			System.out.println("Old:  " + oldGeneration.tostring());
 			initNewGenetation();
+			
+			// Kiểm tra thế hệ mới có cá thể cần tìm không?
 			System.out.println("New:  " + newGeneration.tostring());
 			found = check(newGeneration.getIndividuals());
-
+			if(found)
+				break;
+			
+			// Nếu không tìm được, lấy thế hệ mới làm quần thể ban đầu và tiếp tục di truyền.
 			Individual[] nextIn = selection.rankSelection(oldGeneration.getIndividuals().length,
 					newGeneration.getIndividuals(), oldGeneration.getIndividuals());
 			oldGeneration.setIndividuals(nextIn);
@@ -105,6 +111,7 @@ public class Gameboard {
 		for (Individual in : individuals) {
 			if (in.fitness() == 0) {
 				System.out.println("Destination individual is:" + in.toString());
+				System.out.println("------------END----------------");
 				return true;
 			}
 		}
