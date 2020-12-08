@@ -27,7 +27,7 @@ public class Gameboard {
 	public void restart() {
 		found = false;
 
-		oldGeneration = new Population(2000);
+		oldGeneration = new Population(1602);
 		oldGeneration.initPopulation();
 
 		newGeneration = new Population();
@@ -36,7 +36,7 @@ public class Gameboard {
 		mutation = new FlipBitMutation();
 		selection = new RankSelection();
 	}
-	
+
 	// Lai tạo quần thể tạo ra n cá thể con
 	public Individual[] crossover(Population pop) {
 
@@ -52,6 +52,7 @@ public class Gameboard {
 
 		return popCross;
 	}
+
 	// đột biến 0.5 số lượng cá thể truyền vào tạo ra 0.5 cá thể con
 	public Individual[] mutation(Individual[] individuals) {
 
@@ -80,7 +81,7 @@ public class Gameboard {
 		Arrays.sort(popCross);
 		// Lấy 1 nữa cá thể xấu nhất vừa lại tạo đi đột biến.
 		Individual[] popMu = mutation(popCross);
-		
+
 		// Chọn số lượng cá thể tốt vừa đột biến và lai tạo thành thế hệ mới
 		Individual[] newIndividuals = selection.rankSelection(oldGeneration.getIndividuals().length, popCross, popMu);
 		newGeneration.setIndividuals(newIndividuals);
@@ -91,14 +92,15 @@ public class Gameboard {
 			// Khởi tạo thế hệ mới.
 			System.out.println("Old:  " + oldGeneration.tostring());
 			initNewGenetation();
-			
+
 			// Kiểm tra thế hệ mới có cá thể cần tìm không?
 			System.out.println("New:  " + newGeneration.tostring());
 			found = check(newGeneration.getIndividuals());
-			if(found)
+			if (found)
 				break;
-			
-			// Nếu không tìm được, lấy thế hệ mới làm quần thể ban đầu và tiếp tục di truyền.
+
+			// Nếu không tìm được, lấy thế hệ mới làm quần thể ban đầu và tiếp tục di
+			// truyền.
 			Individual[] nextIn = selection.rankSelection(oldGeneration.getIndividuals().length,
 					newGeneration.getIndividuals(), oldGeneration.getIndividuals());
 			oldGeneration.setIndividuals(nextIn);
@@ -120,6 +122,14 @@ public class Gameboard {
 
 	public static void main(String[] args) {
 		Gameboard gb = new Gameboard();
+		long st = System.currentTimeMillis();
 		gb.genetic();
+		long et = System.currentTimeMillis();
+		System.out.println("Time sovle: " + (et - st) / 1000 + "s");
+		/*
+		 * Code bug nếu quần thể ban đầu là lẻ
+		 * Lâu lâu nó bị ngu 1 lần nên giải không ra.
+		 * Chương trình chạy quá lâu.
+		 */
 	}
 }

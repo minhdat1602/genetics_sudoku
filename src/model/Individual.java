@@ -30,6 +30,7 @@ public class Individual implements Comparable<Individual> {
 		return st;
 	}
 
+	// Code quá xấu, vòng for khá nhiều.
 	public int rowHeuristic() {
 		int result = 0;
 		for (int k = 0; k < 9; k++) {
@@ -61,7 +62,30 @@ public class Individual implements Comparable<Individual> {
 	public int boxHeuristic() {
 		int result = 0;
 
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				for (int k = 1; k <= 9; k++) {
+					result += checkBox(i, j, k);
+				}
+			}
+		}
 		return result;
+	}
+
+	private int checkBox(int offSetX, int offSetY, int num) {
+		int result = 0;
+
+		int beginX = offSetX * 3;
+		int beginY = offSetY * 3;
+
+		for (int i = beginX; i < beginX + 3; i++) {
+			for (int j = beginY; j < beginY + 3; j++) {
+				if (genes[i].getTile(j) == num)
+					result++;
+			}
+		}
+
+		return (result > 0 ? --result : 0);
 	}
 
 	public int fitness() {
@@ -88,9 +112,9 @@ public class Individual implements Comparable<Individual> {
 		Individual individual = new Individual();
 		individual.initIndividual();
 
-		System.out.println(individual.toString());
+		System.out.println("Individual:" + individual.toString());
 
-		System.out.println("Column heuristic: " + individual.colHeuristic());
+		System.out.println("Box heuristic: " + individual.boxHeuristic());
 	}
 
 	@Override
