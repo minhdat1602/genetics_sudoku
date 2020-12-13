@@ -1,11 +1,12 @@
 package model;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import model.comunity.Individual;
 import model.comunity.Population;
 import model.crossover.Crossover;
-import model.crossover.TwoPointCrossover;
+import model.crossover.SinglePointCrossover;
 import model.mutation.FlipBitMutation;
 import model.mutation.Mutation;
 import model.selection.RankSelection;
@@ -13,14 +14,15 @@ import model.selection.Selection;
 
 public class Gameboard {
 
-	private Population oldGeneration;
-	private Population newGeneration;
+	private Population currentGeneration;
+	private Population nextGeneration;
 
 	private Crossover crossover;
 	private Mutation mutation;
 	private Selection selection;
 
 	private boolean found;
+	private int generation;
 
 	public Gameboard() {
 		restart();
@@ -28,90 +30,112 @@ public class Gameboard {
 
 	public void restart() {
 		found = false;
+		generation = 0;
 
-		oldGeneration = new Population(1602);
-		oldGeneration.initPopulation();
+		currentGeneration = new Population(200);
+		currentGeneration.initPopulation();
 
-		newGeneration = new Population();
-
-		crossover = new TwoPointCrossover();
+		crossover = new SinglePointCrossover();
 		mutation = new FlipBitMutation();
 		selection = new RankSelection();
 	}
 
-	// Lai tạo quần thể tạo ra n cá thể con
-	public Individual[] crossover(Population pop) {
-
-		int individualNum = pop.getIndividuals().length;
+	// Lai tạo quần thể tạo ra n cá thể con.
+	// Lại tạo vòng.
+	public Individual[] cycleCrossover(Individual[] individuals) {
+		long st = System.currentTimeMillis();
+		// PopCross: mảng lưu số cá thể con sau lai tạo.
+		int individualNum = individuals.length;
 		Individual[] popCross = new Individual[individualNum];
 
+		// Khai báo cá thể con.
 		Individual offspring;
-
+		// Lai tạo
 		for (int i = 0; i < individualNum; i++) {
-			offspring = crossover.cross(pop);
+
+			if (i == (individualNum - 1)) // cá thể cuối cùng thì đem lai với cá thể đầu tiên.
+				offspring = crossover.cross(individuals[i], individuals[0]);
+			else
+				offspring = crossover.cross(individuals[i], individuals[i + 1]);
+
 			popCross[i] = offspring;
 		}
-
+		// sắp xếp cho nó đẹp
+		long et = System.currentTimeMillis();
+		System.out.println("Crossover in: " + (et - st));
 		return popCross;
 	}
 
-	// đột biến 0.5 số lượng cá thể truyền vào tạo ra 0.5 cá thể con
-	public Individual[] mutation(Individual[] individuals) {
-
+	/*
+	 * Đột biến 1/2 số cá thể con. Đột biến xen kẽ: A B C D... + Đột biến A hoặc B +
+	 * Đột biến C hoặc D
+	 */
+	public Individual[] largeScaleMutations(Individual[] individuals) {
+		long st = System.currentTimeMillis();
+		Random rd = new Random();
+		// popMu: mảng lưu số cá thể con sau khi đột biến.
 		int sizeOfPop = individuals.length;
-
 		Individual[] popMu = new Individual[sizeOfPop / 2];
 
-		// System.out.println("Small size: " + sizeOfPop / 2);
-
-		// Đột biến nữa sau các cá thể vừa lại tạo (các cá thể không tốt)
+		// Khai báo cá thể con.
 		Individual offspring;
-		for (int i = sizeOfPop - 1; i >= sizeOfPop / 2; i--) {
-			offspring = mutation.twoGeneMutation(individuals[i]);
-			popMu[sizeOfPop - i - 1] = offspring;
-			// System.out.println("Big index:" + i);
-			// System.out.println("Small index:" + (sizeOfPop - i - 1));
+		// Đột biến
+		int begin = 0;
+		for (int i = 0; i < sizeOfPop; i += 2) {
+			offspring = mutation.cellLevel(individuals[i + rd.nextInt(1)]);
+			popMu[begin++] = offspring;
 		}
-
+		// sắp xếp cho nó đẹp nà.
+		// Arrays.sort(popMu);
+		long et = System.currentTimeMillis();
+		System.out.println("Mutation in: " + (et - st));
 		return popMu;
 	}
 
 	public void initNewGenetation() {
 		// Lai tạo được một số cá thể
-		Individual[] popCross = crossover(oldGeneration);
+		Individual[] popCross = cycleCrossover(currentGeneration.getIndividuals());
 		// Sắp xếp các cá thể theo thứ tự xấu dần.
-		Arrays.sort(popCross);
+
 		// Lấy 1 nữa cá thể xấu nhất vừa lại tạo đi đột biến.
-		Individual[] popMu = mutation(popCross);
+		Individual[] popMu = largeScaleMutations(popCross);
 
 		// Chọn số lượng cá thể tốt vừa đột biến và lai tạo thành thế hệ mới
-		Individual[] newIndividuals = selection.rankSelection(oldGeneration.getIndividuals().length, popCross, popMu);
-		newGeneration.setIndividuals(newIndividuals);
+		Individual[] newIndividuals = selection.rankSelection(currentGeneration.getIndividuals().length, false,
+				popCross, popMu);
+
+		nextGeneration = new Population();
+		nextGeneration.setIndividuals(newIndividuals);
 	}
 
 	public void genetic() {
 		while (!found) {
+			System.out.println("Generation: " + generation++);
+
 			// Khởi tạo thế hệ mới.
-			System.out.println("Old:  " + oldGeneration.tostring());
 			initNewGenetation();
 
+			System.out.println("Old:  " + currentGeneration.tostring());
+			System.out.println("New:  " + nextGeneration.tostring());
+
 			// Kiểm tra thế hệ mới có cá thể cần tìm không?
-			System.out.println("New:  " + newGeneration.tostring());
-			found = check(newGeneration.getIndividuals());
-			if (found)
+			if (found = checkGoal(nextGeneration.getIndividuals()))
 				break;
 
-			// Nếu không tìm được, lấy thế hệ mới làm quần thể ban đầu và tiếp tục di
-			// truyền.
-			Individual[] nextIn = selection.rankSelection(oldGeneration.getIndividuals().length,
-					newGeneration.getIndividuals(), oldGeneration.getIndividuals());
-			oldGeneration.setIndividuals(nextIn);
-			if (!found)
-				System.out.println("Next: " + oldGeneration.tostring());
+			// Chọn lọc số lượng cá thể ok nhất.
+			Individual[] nextIn = selection.rankSelection(currentGeneration.getIndividuals().length, true,
+					nextGeneration.getIndividuals(), currentGeneration.getIndividuals());
+			// Khởi tạo quần thể dùng để tiếp tục di truyền.
+			currentGeneration = new Population();
+			currentGeneration.setIndividuals(nextIn);
+
+			System.out.println("Next: " + currentGeneration.tostring());
+			System.out.println("-------------------------------------------------------------------------"
+					+ "-----------------------------------------------------------------------");
 		}
 	}
 
-	public boolean check(Individual[] individuals) {
+	public boolean checkGoal(Individual[] individuals) {
 		for (Individual in : individuals) {
 			if (in.fitness() == 0) {
 				System.out.println("Destination individual is:" + in.toString());
@@ -128,9 +152,6 @@ public class Gameboard {
 		gb.genetic();
 		long et = System.currentTimeMillis();
 		System.out.println("Time sovle: " + (et - st) / 1000 + "s");
-		/*
-		 * Code bug nếu quần thể ban đầu là lẻ Lâu lâu nó bị ngu 1 lần nên giải không
-		 * ra. Chương trình chạy quá lâu.
-		 */
+
 	}
 }

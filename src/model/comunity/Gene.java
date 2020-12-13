@@ -5,26 +5,34 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Gene {
-	private int[] tiles;
+	private int[] chromosomes;
 
-	public Gene(int[] tiles) {
+	public Gene(int[] chromosomes) {
 		super();
-		this.tiles = tiles;
+		this.chromosomes = chromosomes;
 	}
 
 	public Gene() {
-		tiles = new int[9];
+		chromosomes = new int[9];
 		fillRandom();
 	}
 
+	public boolean equalChro(Gene order) {
+		for (int i = 0; i < order.getChromosomes().length; i++) {
+			if (chromosomes[i] != order.getChromosomes()[i])
+				return false;
+		}
+		return true;
+	}
+
 	public void copy(Gene order) {
-			tiles = Arrays.copyOf(order.getTiles(), tiles.length);
+		chromosomes = Arrays.copyOf(order.getChromosomes(), chromosomes.length);
 	}
 
 	public String toString() {
 		String st = "Gene:";
 		for (int i = 0; i < 9; i++) {
-			st += " " + tiles[i];
+			st += " " + chromosomes[i];
 		}
 		return st;
 	}
@@ -33,35 +41,40 @@ public class Gene {
 		Random random = new Random();
 		ArrayList<Integer> notvalid = new ArrayList<Integer>();
 
-		for (int i = 0; i < tiles.length; i++) {
-			int value = random.nextInt(tiles.length) + 1;
+		for (int i = 0; i < chromosomes.length; i++) {
+			int value = random.nextInt(chromosomes.length) + 1;
 			while (notvalid.contains(value)) {
-				value = random.nextInt(tiles.length) + 1;
+				value = random.nextInt(chromosomes.length) + 1;
 			}
-			tiles[i] = value;
+			chromosomes[i] = value;
 			notvalid.add(value);
 
 		}
 	}
 
-	public int[] getTiles() {
-		return tiles;
+	public int[] getChromosomes() {
+		return chromosomes;
 	}
 
-	public void setTiles(int[] tiles) {
-		this.tiles = tiles;
+	public void setChromosomes(int[] tiles) {
+		this.chromosomes = tiles;
 	}
 
-	public void setTile(int index, int value) {
-		tiles[index] = value;
+	public void setChromosome(int index, int value) {
+		chromosomes[index] = value;
 	}
 
-	public int getTile(int index) {
-		return tiles[index];
+	public int getChromosome(int index) {
+		return chromosomes[index];
 	}
 
 	public static void main(String[] args) {
-		Gene gene = new Gene();
+		int[] i1 = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		int[] i2 = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		Gene gene = new Gene(i1);
+		Gene x = new Gene(i2);
+		System.out.println(gene.equalChro(x));
+		System.out.println(gene.equalChro(gene));
 		System.out.println(gene.toString());
 	}
 }

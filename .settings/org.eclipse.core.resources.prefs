@@ -1,4 +1,4 @@
 eclipse.preferences.version=1
 encoding//src/model/comunity/Population.java=UTF-8
-encoding//src/model/crossover/TwoPointCrossover.java=UTF-8
+encoding//src/model/crossover/SinglePointCrossover.java=UTF-8
 encoding/<project>=UTF-8
