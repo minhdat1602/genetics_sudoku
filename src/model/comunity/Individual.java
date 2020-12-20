@@ -1,28 +1,54 @@
 package model.comunity;
 
+import java.util.ArrayList;
+
 public class Individual implements Comparable<Individual> {
 	private Gene[] genes;
 
-	public Individual(Gene[] order) {
-		genes = new Gene[order.length];
+	public Individual(Individual order) {
 
-		for (int i = 0; i < order.length; i++) {
+		genes = new Gene[order.getGenes().length];
+		for (int i = 0; i < genes.length; i++) {
 			genes[i] = new Gene();
-			genes[i].copy(order[i]);
+			genes[i].copy(order.getGenes()[i]);
+			genes[i].setDefaultValues(order.getGenes()[i].getDefaultValues());
 		}
 	}
 
 	public Individual() {
 		genes = new Gene[9];
-	}
-
-	public void initIndividual() {
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < genes.length; i++) {
 			genes[i] = new Gene();
 		}
 	}
 
-	public boolean equalGene(Individual order) {
+	public Individual(int[][] chromosomes) {
+
+		this.genes = new Gene[chromosomes.length];
+		for (int i = 0; i < chromosomes.length; i++) {
+			Gene gene = new Gene();
+			ArrayList<Integer> defaultIndexs = new ArrayList<Integer>();
+			ArrayList<Integer> defaultValues = new ArrayList<Integer>();
+			for (int j = 0; j < chromosomes[i].length; j++) {
+				gene.getChromosomes()[j] = chromosomes[i][j];
+				if (chromosomes[i][j] != 0) {
+					defaultIndexs.add(j);
+					defaultValues.add(chromosomes[i][j]);
+				}
+			}
+			gene.setDefaultIndexs(defaultIndexs);
+			gene.setDefaultValues(defaultValues);
+			genes[i] = gene;
+		}
+	}
+
+	public void fillRamdom() {
+		for (int i = 0; i < genes.length; i++) {
+			genes[i].fillRandom();
+		}
+	}
+
+	public boolean equals(Individual order) {
 		for (int i = 0; i < order.getGenes().length; i++) {
 			if (!genes[i].equalChro(order.getGenes()[i]))
 				return false;
@@ -89,7 +115,7 @@ public class Individual implements Comparable<Individual> {
 
 		for (int i = beginX; i < beginX + 3; i++) {
 			for (int j = beginY; j < beginY + 3; j++) {
-				if (genes[i].getChromosome(j) == num)
+				if (genes[i].getChromosomes()[j] == num)
 					result++;
 			}
 		}
@@ -110,22 +136,13 @@ public class Individual implements Comparable<Individual> {
 		this.genes = genes;
 	}
 
-	public void setGene(Gene gene, int number) {
-		genes[number] = new Gene();
-		genes[number].copy(gene);
-	}
-
-	public Gene getGene(int number) {
-		return genes[number];
-	}
-
 	public static void main(String[] args) {
 		Individual individual = new Individual();
-		individual.initIndividual();
+		individual.fillRamdom();
 		Individual x = new Individual();
-		x.initIndividual();
-		System.out.println(individual.equalGene(individual));
-		System.out.println(individual.equalGene(x));
+		x.fillRamdom();
+		System.out.println(individual.equals(individual));
+		System.out.println(individual.equals(x));
 		System.out.println("Individual:" + individual.toString());
 		System.out.println("Box heuristic: " + individual.boxHeuristic());
 	}

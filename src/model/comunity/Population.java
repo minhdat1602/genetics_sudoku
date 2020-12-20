@@ -9,30 +9,39 @@ public class Population {
 	public Population() {
 	}
 
-	public Population(int individualNum) {
-		individuals = new Individual[individualNum];
+	public Population(int num) {
+		individuals = new Individual[num];
 	}
 
 	public Population(Individual[] individuals) {
 		this.individuals = individuals;
 	}
 
-	public void initPopulation() {
+	public void initPopulation(Individual defaultIn) {
 		for (int i = 0; i < individuals.length; i++) {
-			Individual individual = new Individual();
-			individual.initIndividual();
+			Individual individual = new Individual(defaultIn);
+			individual.fillRamdom();
 			individuals[i] = individual;
 		}
 	}
 
-	public void sortIndividuals() {
-		Arrays.sort(individuals);
+	public void initPopulation() {
+		int[][] chromosomes = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+		Individual defaultIn = new Individual(chromosomes);
+		for (int i = 0; i < individuals.length; i++) {
+			Individual individual = new Individual(defaultIn);
+			individual.fillRamdom();
+			individuals[i] = individual;
+		}
 	}
 
 	public Individual getBest() {
-		// sort
-		sortIndividuals();
-		// get first
+
+		Arrays.sort(individuals);
+
 		return individuals[0];
 	}
 
@@ -52,16 +61,18 @@ public class Population {
 		this.individuals = individuals;
 	}
 
-	public Individual getIndividual(int index) {
-		return individuals[index];
-	}
-
-	public void setIndividual(Individual individual, int index) {
-		individuals[index] = individual;
-	}
-
 	public static void main(String[] args) {
-		Population population = new Population();
+		Population population = new Population(1);
+		int[][] chromosomes = new int[][] { { 1, 0, 0, 0, 0, 0, 0, 0, 0 }, { 2, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 3, 0, 6, 0, 0, 0, 0, 0, 0 }, { 4, 0, 0, 0, 0, 0, 0, 0, 0 }, { 5, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 6, 0, 0, 0, 0, 0, 0, 0, 0 }, { 7, 0, 0, 0, 0, 0, 0, 0, 0 }, { 8, 0, 0, 0, 0, 0, 0, 0, 0 },
+				{ 9, 0, 0, 0, 0, 0, 0, 0, 0 } };
+		Individual defaultIn = new Individual(chromosomes);
+		population.initPopulation(defaultIn);
+
 		System.out.println(population.tostring());
+		System.out.println(population.getIndividuals()[0].toString());
+
+		System.out.println(defaultIn.getGenes()[2].getDefaultIndexs());
 	}
 }

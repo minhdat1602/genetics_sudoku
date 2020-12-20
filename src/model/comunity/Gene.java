@@ -1,20 +1,33 @@
 package model.comunity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class Gene {
 	private int[] chromosomes;
+	private ArrayList<Integer> defaultValues;
+	private ArrayList<Integer> defaultIndexs;
 
 	public Gene(int[] chromosomes) {
 		super();
+
 		this.chromosomes = chromosomes;
+
+		defaultValues = new ArrayList<Integer>();
+		defaultIndexs = new ArrayList<Integer>();
+
+		for (int i = 0; i < chromosomes.length; i++) {
+			if (chromosomes[i] != 0) {
+				defaultValues.add(chromosomes[i]);
+				defaultIndexs.add(i);
+			}
+		}
 	}
 
 	public Gene() {
 		chromosomes = new int[9];
-		fillRandom();
+		defaultValues = new ArrayList<>();
+		defaultIndexs = new ArrayList<>();
 	}
 
 	public boolean equalChro(Gene order) {
@@ -26,7 +39,19 @@ public class Gene {
 	}
 
 	public void copy(Gene order) {
-		chromosomes = Arrays.copyOf(order.getChromosomes(), chromosomes.length);
+
+		for (int i = 0; i < order.getChromosomes().length; i++) {
+			chromosomes[i] = order.getChromosomes()[i];
+		}
+		
+		
+		this.defaultValues = order.defaultValues;
+		this.defaultIndexs = order.defaultIndexs;
+//		
+//		for (int i = 0; i < order.defaultValues.size(); i++) {
+//			this.defaultValues.add(order.defaultValues.get(i));
+//			this.defaultIndexs.add(order.defaultIndexs.get(i));
+//		}
 	}
 
 	public String toString() {
@@ -39,15 +64,20 @@ public class Gene {
 
 	public void fillRandom() {
 		Random random = new Random();
-		ArrayList<Integer> notvalid = new ArrayList<Integer>();
+
+		ArrayList<Integer> valids = new ArrayList<Integer>();
 
 		for (int i = 0; i < chromosomes.length; i++) {
-			int value = random.nextInt(chromosomes.length) + 1;
-			while (notvalid.contains(value)) {
-				value = random.nextInt(chromosomes.length) + 1;
+			if (chromosomes[i] == 0) {
+				int value;
+				do {
+					value = random.nextInt(chromosomes.length) + 1;
+				} while (valids.contains(value) || defaultValues.contains(value));
+
+				chromosomes[i] = value;
+				valids.add(value);
+
 			}
-			chromosomes[i] = value;
-			notvalid.add(value);
 
 		}
 	}
@@ -60,21 +90,32 @@ public class Gene {
 		this.chromosomes = tiles;
 	}
 
-	public void setChromosome(int index, int value) {
-		chromosomes[index] = value;
+	public ArrayList<Integer> getDefaultValues() {
+		return defaultValues;
 	}
 
-	public int getChromosome(int index) {
-		return chromosomes[index];
+	public void setDefaultValues(ArrayList<Integer> values) {
+		this.defaultValues = values;
+	}
+
+	public ArrayList<Integer> getDefaultIndexs() {
+		return defaultIndexs;
+	}
+
+	public void setDefaultIndexs(ArrayList<Integer> defaultIndexs) {
+		this.defaultIndexs = defaultIndexs;
 	}
 
 	public static void main(String[] args) {
-		int[] i1 = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		int[] i2 = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		Gene gene = new Gene(i1);
-		Gene x = new Gene(i2);
-		System.out.println(gene.equalChro(x));
-		System.out.println(gene.equalChro(gene));
-		System.out.println(gene.toString());
+		int[] i1 = new int[] { 0, 0, 0, 0, 5, 6, 7, 8, 9 };
+		Gene x1 = new Gene(i1);
+		System.out.println(x1.getDefaultValues().toString());
+		x1.fillRandom();
+
+		Gene x2 = new Gene();
+		x2.fillRandom();
+
+		System.out.println(x1.toString());
+		System.out.println(x2.toString());
 	}
 }

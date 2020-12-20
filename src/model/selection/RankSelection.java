@@ -24,7 +24,15 @@ public class RankSelection implements Selection {
 					if (isConstaint(inSum, inElement[j]))
 						continue;
 				}
+//				for (int x = 0; x < 9; x++) {
+//					System.out.println("Gene: " + x);
+//					System.out.println("Index " + inElement[j].getGenes()[x].getDefaultIndexs());
+//					System.out.println("Value" + inElement[j].getGenes()[x].getDefaultValues());
+//					System.out.println("-----------------------------------------");
+//				}
 				inSum.add(inElement[j]);
+			//	System.out.println("--------------------------");
+			//	System.out.println(inElement[j].toString());
 			}
 		}
 		// Xếp hàng, cá thể nào ngon đứng trước.
@@ -44,7 +52,7 @@ public class RankSelection implements Selection {
 
 	public boolean isConstaint(ArrayList<Individual> ins, Individual in) {
 		for (int i = 0; i < ins.size(); i++) {
-			if ((ins.get(i).equalGene(in))) {
+			if ((ins.get(i).equals(in))) {
 				return true;
 			}
 		}
@@ -54,14 +62,12 @@ public class RankSelection implements Selection {
 	public static void main(String[] args) {
 		RankSelection selection = new RankSelection();
 
-		Population oldp = new Population(1000);
+		Population oldp = new Population(100);
 		oldp.initPopulation();
-		oldp.sortIndividuals();
 		System.out.println("Old:  " + oldp.tostring());
 
-		Population newp = new Population(1000);
+		Population newp = new Population(100);
 		newp.initPopulation();
-		newp.sortIndividuals();
 		System.out.println("New:  " + newp.tostring());
 
 		Population nextp = new Population();
